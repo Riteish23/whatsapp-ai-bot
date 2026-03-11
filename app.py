@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 TOKEN = os.environ.get("WHATSAPP_TOKEN")
 PHONE_ID = os.environ.get("PHONE_NUMBER_ID")
+
 VERIFY_TOKEN = "ninelab123"
 
 
@@ -18,7 +19,7 @@ def webhook():
         challenge = request.args.get("hub.challenge")
 
         if mode == "subscribe" and token == VERIFY_TOKEN:
-            return challenge, 200
+            return challenge
         else:
             return "verification failed", 403
 
@@ -34,7 +35,7 @@ def webhook():
             url = f"https://graph.facebook.com/v18.0/{PHONE_ID}/messages"
 
             headers = {
-                "Authorization": f"Bearer {TOKEN}",
+                "Authorization": f"Bearer {TOKEN},
                 "Content-Type": "application/json"
             }
 
@@ -46,12 +47,15 @@ def webhook():
 
             requests.post(url, headers=headers, json=payload)
 
-        except:
-            pass
+        except Exception as e:
+            print(e)
 
-        return "ok", 200
+        return "ok"
 
 
 @app.route("/")
 def home():
     return "Bot running"
+
+
+app.run(host="0.0.0.0", port=10000)
